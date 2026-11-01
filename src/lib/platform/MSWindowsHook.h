@@ -28,6 +28,13 @@
 #define DESKFLOW_HOOK_FAKE_INPUT_VIRTUAL_KEY VK_CANCEL
 #define DESKFLOW_HOOK_FAKE_INPUT_SCANCODE 0
 
+// HOZO 2026-11-01: 给 Deskflow 自己注入的键鼠事件打标记。
+// 低级钩子用 dwExtraInfo 区分两种注入：
+//   1) Deskflow 自己的注入（本标记）—— 保持原有行为，可继续转发给对端；
+//   2) 其它程序注入的键鼠（AI 自动化、RustDesk/向日葵等远程控制、输入法工具等）
+//      —— 一律放行，只在本地生效，不再转发到对端（Mac），避免串键。
+static const ULONG_PTR kHozoDeskflowInputTag = static_cast<ULONG_PTR>(0x484F5A4F); // 'HOZO'
+
 enum EHookResult
 {
   kHOOK_FAILED,
