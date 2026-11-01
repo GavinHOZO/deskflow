@@ -89,7 +89,7 @@ static void send_keyboard_input(WORD wVk, WORD wScan, DWORD dwFlags)
   inp.ki.wScan = wScan;
   inp.ki.dwFlags = dwFlags & 0xF;
   inp.ki.time = 0;
-  inp.ki.dwExtraInfo = 0;
+  inp.ki.dwExtraInfo = kHozoDeskflowInputTag; // HOZO: 标记为 Deskflow 自己的注入
   SendInput(1, &inp, sizeof(inp));
 }
 
@@ -102,7 +102,7 @@ static void send_mouse_input(DWORD dwFlags, DWORD dx, DWORD dy, DWORD dwData)
   inp.mi.dy = dy;
   inp.mi.mouseData = dwData;
   inp.mi.time = 0;
-  inp.mi.dwExtraInfo = 0;
+  inp.mi.dwExtraInfo = kHozoDeskflowInputTag; // HOZO: 标记为 Deskflow 自己的注入
   SendInput(1, &inp, sizeof(inp));
 }
 

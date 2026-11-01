@@ -453,7 +453,10 @@ static LRESULT CALLBACK keyboardLLHook(int code, WPARAM wParam, LPARAM lParam)
     KBDLLHOOKSTRUCT *info = reinterpret_cast<KBDLLHOOKSTRUCT *>(lParam);
 
     bool const injected = info->flags & LLKHF_INJECTED;
-    if (!g_isPrimary && injected) {
+    // HOZO 2026-11-01: 只处理「Deskflow 自己注入」或「实体键鼠」。
+    // 其它程序注入的键鼠（AI 自动化、RustDesk/向日葵等远程控制）一律放行，
+    // 只在 Windows 本地生效，不再转发到 Mac —— 这是"双闸门"的模拟输入闸门。
+    if (injected && (!g_isPrimary || info->dwExtraInfo != kHozoDeskflowInputTag)) {
       return CallNextHookEx(g_keyboardLL, code, wParam, lParam);
     }
 
@@ -600,7 +603,8 @@ static LRESULT CALLBACK mouseLLHook(int code, WPARAM wParam, LPARAM lParam)
     MSLLHOOKSTRUCT *info = reinterpret_cast<MSLLHOOKSTRUCT *>(lParam);
 
     bool const injected = info->flags & LLMHF_INJECTED;
-    if (!g_isPrimary && injected) {
+    // HOZO 2026-11-01: 同键盘钩子 —— 外部程序注入的鼠标事件只留在本地，不转发到 Mac。
+    if (injected && (!g_isPrimary || info->dwExtraInfo != kHozoDeskflowInputTag)) {
       return CallNextHookEx(g_mouseLL, code, wParam, lParam);
     }
 
